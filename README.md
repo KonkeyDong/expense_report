@@ -10,7 +10,7 @@
 
 # Versions
 
-* latest (based on debian:stable)
+* latest (based on debian:stable).
 
 ---
 
