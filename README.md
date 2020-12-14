@@ -30,8 +30,9 @@ NOTE: You may want to change the username on `line 1` of `Makefile.docker` to yo
 
 `DOCKER_NAMESPACE=<username>`
 
-The Following are a list of commands found in `Makefile.docker`.
+Use the following commands to install Docker or create a Docker container:
 
+* `make install-docker` - Install Docker on a Linux Mint 20 OS via the command line.
 * `make build-latest`
 * `make build-beta`
 * `make build-version <version_number>`
