@@ -7,3 +7,4 @@ services:
     tty: true
     volumes:
       - ./db/:/root/db/
+      - ./bin:/root/bin/
