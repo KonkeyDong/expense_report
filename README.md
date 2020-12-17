@@ -14,40 +14,38 @@
 
 ---
 
-# Image
-
-Install sqlite3 command line.  Use make install to setup the command.
+# Quick Start
 
 ```bash
-docker pull konkeydong/sqlite3
+bash quick_startup.sh
+make exec # if you need to jump into the container
 ```
 
 ---
 
 # Build / Make Commands
 
-NOTE: You may want to change the username on `line 1` of `Makefile.docker` to your Docker Hub username:
+NOTE: You may want to change the username on `line 1` of `Makefile.docker` to your **Docker Hub** username: `DOCKER_NAMESPACE=<username>`
 
-`DOCKER_NAMESPACE=<username>`
-
-Use the following commands to install Docker or create a Docker container:
-
-* `make install-docker` - Install Docker on a Linux Mint 20 OS via the command line.
+* `make install-docker` - Install Docker via command line. (**NOTE**: only verified on Linux Mint 20 OS.)
+* `make build` - **Main way to build a Docker container**; default to latest build version.
+* `make build-no-cache` - Same as `make build` but sets the `--no-cache` flag.
 * `make build-latest`
 * `make build-beta`
 * `make build-version <version_number>`
-* `make build` - Default to latest build version. Also the **default if no arguments are supplied** to the `make` command.
 * `make check` - Checks the version of the docker image currently used.
 * `make update-version` - Update docker image version.
-* `make update-dockerfile` - Updates tag in `Dockerfile`.
-* `make test` - Brings up the test container using the `docker-compose.test.yml` file.
+* `make start` - Boot up the Docker container. **Must be run in the directory where the `docker-compose.yml` file is located**.
+* `make exec` - Enter a Docker container. Run `make start` first and in a separate terminal window before running this command.
+* `make test` - Brings up the test container.
 * `make hadolint` - Formats the `Dockerfile` to use **Docker Inc.'s** best practices.
 * `make clean`
 * `make clean-version`
-* `make prune` - Cleanup all dangling images. Same as running `docker system prune -a`.
-* `make push` - Push docker image to **Docker Hub**.
-              - Remember to update the `DOCKER_NAMESPACE=<username>` to your username before pushing.
-              - Please ensure that you have a public repository such as `{username}/sqlite3`
+* `make prune` - Cleanup all dangling Docker images.
+* `make push` 
+    - Push docker image to **Docker Hub**.
+    - Remember to update the `DOCKER_NAMESPACE=<username>` to your username before pushing.
+    - Please ensure that you have a public repository such as `{username}/sqlite3` on **Docker Hub**.
 
 ---
 
