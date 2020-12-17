@@ -13,11 +13,15 @@ build-beta:
 build-version:
 	test ! -f ./hooks/build || chmod +x ./hooks/build
 	test ! -f ./hooks/build || DOCKER_TAG=$(VERSION) IMAGE_NAME=$(DOCKER_NAMESPACE)/$(DOCKER_IMAGE):$(VERSION) ./hooks/build
-	test -f ./hooks/build || docker build -t $(DOCKER_NAMESPACE)/$(DOCKER_IMAGE) .
+	test -f ./hooks/build || docker build -t $(DOCKER_NAMESPACE)/$(DOCKER_IMAGE) . $(CACHE)
 
 .PHONY: build
 build: build-latest
 	$(foreach version,$(VERSIONS), $(MAKE) -s build-version VERSION=$(version);)
+
+.PHONY: build-no-cache
+build-no-cache: 
+	$(MAKE) build CACHE="--no-cache"
 
 .PHONY: check
 check:
@@ -30,9 +34,13 @@ update-version:
 	rm VERSION
 	$(MAKE) -s check >> VERSION
 
-.PHONY: update-dockerfile
-update-dockerfile: update-version
-	sed -i '/MINOR_TAGS/c\## MINOR_TAGS=$(shell cat VERSION)' Dockerfile
+.PHONY: exec
+exec:
+	docker exec -it $(DOCKER_IMAGE) /bin/bash
+
+.PHONY: start
+start:
+	docker-compose up
 
 .PHONY: test
 test:
@@ -58,3 +66,6 @@ push:
 	docker login
 	docker push ${DOCKER_NAMESPACE}/${DOCKER_IMAGE}
 
+.PHONY: pull
+pull:
+	docker pull $(DOCKER_NAMESPACE)/$(DOCKER_IMAGE)
