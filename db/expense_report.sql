@@ -1,6 +1,6 @@
 CREATE TABLE expense_report (
-    expense_report_id INTEGER       PRIMARY KEY,
-    [date]            DATE          NOT NULL, -- YYYYMMDD format
+    expense_report_id INTEGER       PRIMARY KEY AUTOINCREMENT,
+    purchase_date     DATE          NOT NULL, -- yyyy-mm-dd format
     merchant_id       INTEGER       NOT NULL,
     cost              INTEGER       NOT NULL, -- store as cents; multiply cost by 100 to store nicely.
     note              VARCHAR(100),
