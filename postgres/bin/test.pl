@@ -10,6 +10,19 @@ use DBI;
 use Digest::SHA qw(sha256_hex);
 use Data::Dumper;
 
+# use Cwd qw( abs_path );
+# use File::Basename qw( dirname );
+# use lib dirname(abs_path($0));
+
+use lib "/root/bin";
+
+use Trie;
+
+my $trie = Trie->new;
+
+exit 0;
+
+
 my $dbh = DBI->connect("DBI:SQLite:/root/db/expense_report.db") or die "Couldn't connect to database: " . DBI->errstr;
 
 insert($dbh);
