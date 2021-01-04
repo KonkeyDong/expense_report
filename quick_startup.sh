@@ -1,8 +1,11 @@
 #!/bin/bash
 
-mkdir -p ~/docker/volumes/postgres
+CMD=./cmd.bash
 
-make install-docker
-make pull
-make build
-make start
+mkdir -p ~/docker/volumes/postgres
+chmod 754 cmd.bash
+
+${CMD} install
+${CMD} pull
+${CMD} build_all
+${CMD} start
