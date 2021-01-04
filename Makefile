@@ -1,4 +1,4 @@
-DOCKER_IMAGE=sqlite3
+DOCKER_IMAGE=postgres
 
 include Makefile.docker
 

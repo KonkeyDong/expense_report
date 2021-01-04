@@ -1,11 +1,31 @@
 version: '3'
 
 services:
-  sqlite3:
-    container_name: sqlite3
-    image: konkeydong/sqlite3:latest
+  node:
+    container_name: node
+    image: konkeydong/node:latest
     stdin_open: true
     tty: true
+    network_mode: bridge
+    ports: 
+      -  8081:8081
+    build: ./node
     volumes:
-      - ./db/:/root/db/
-      - ./bin/:/root/bin/
+      - ./node/:/usr/src/app
+
+  postgres:
+    container_name: postgres
+    image: konkeydong/postgres:latest
+    stdin_open: true
+    tty: true
+    ports: 
+      -  5432:5432
+    network_mode: bridge
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    build: ./postgres
+    volumes:
+      - ./postgres/db/:/root/db/
+      - ./postgres/bin/:/root/bin/
+      - $HOME/docker/volumes/postgres/:/var/lib/postgresql/data
