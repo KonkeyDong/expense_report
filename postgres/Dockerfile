@@ -18,7 +18,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq --no-install-recommends install s
 	mkdir -p /root/db && \
     mkdir -p $INSTALL_PATH_REMOTE
 
-WORKDIR /root/db
+WORKDIR /app
+COPY --chown=postgres . /app
 EXPOSE 5432
 USER postgres
 
