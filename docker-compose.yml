@@ -28,8 +28,7 @@ services:
     networks:
       - the_net
     volumes:
-      - ./postgres/db/:/root/db/
-      - ./postgres/bin/:/root/bin/
+      - ./postgres/db/:/app/db/
       - $HOME/docker/volumes/postgres/:/var/lib/postgresql/data
 
 networks:
