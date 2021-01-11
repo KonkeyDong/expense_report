@@ -23,4 +23,4 @@ COPY --chown=postgres . /app
 EXPOSE 5432
 USER postgres
 
-ENTRYPOINT [ "postgres" ]
+ENTRYPOINT [ "bash", "start.bash" ]
