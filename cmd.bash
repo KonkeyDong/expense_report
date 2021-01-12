@@ -2,7 +2,7 @@
 
 DOCKER_USERNAME="konkeydong"
 CWD=$(dirname "$(readlink -f "$0")")
-declare -A AA=([node]=1 [postgres]=1) # AA = associative array (AKA hash table)
+declare -A image_hash_list=([node]=1 [postgres]=1)
 
 _check_argument()
 {
@@ -29,7 +29,7 @@ build()
 {
     local project=$(_check_argument "$1" "missing argument [project]")
 
-    if [[ ${AA[${project}]} == "1" ]]
+    if [[ ${image_hash_list[${project}]} == "1" ]]
     then
         cd ${CWD}/${project}
         docker build -t ${DOCKER_USERNAME}/${project} .
@@ -39,7 +39,7 @@ build()
 
 build_all()
 {
-    for key in "${!AA[@]}"
+    for key in "${!image_hash_list[@]}"
     do
         build "${key}"
     done
@@ -48,10 +48,18 @@ build_all()
 exec()
 {
     local container_name=$(_check_argument "$1" "missing argument [container_name]")
+    local root_access=$2
 
-    if [[ ${AA[${container_name}]} == "1" ]]
+    if [[ $root_access == "root" ]]
     then
-        docker exec -it ${container_name} /bin/bash
+        root_access="-u 0" # ID 0 = root user
+    else
+        root_access=""
+    fi
+
+    if [[ ${image_hash_list[${container_name}]} == "1" ]]
+    then
+        docker exec -it ${root_access} ${container_name} /bin/bash
     fi
 }
 
@@ -72,15 +80,15 @@ pull() { _push_pull "pull" "$1" "$2"; }
 help()
 {
     cat << EOF
-    build { node postgres }: Build the specified container.
-    build_all:               Build all containers.
-    exec { node postgres }:  Exec into specified container.
-    help:                    Display this help doc and exit.
-    install:                 Install Docker and Docker-Compose.
-    prune:                   Remove all dangling docker images.
-    pull:                    Pull container from docker hub.
-    push:                    Push container to docker hub.
-    start:                   Start all docker containers.
+    build { node postgres }:        Build the specified container.
+    build_all:                      Build all containers.
+    exec { node postgres } [root]:  Exec into specified container. Uses root user if root is passed.
+    help:                           Display this help doc and exit.
+    install:                        Install Docker and Docker-Compose.
+    prune:                          Remove all dangling docker images.
+    pull:                           Pull container from docker hub.
+    push:                           Push container to docker hub.
+    start:                          Start all docker containers.
 EOF
 
     exit 0
