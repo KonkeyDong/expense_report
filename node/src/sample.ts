@@ -1,5 +1,5 @@
 // import { Base } from './base.js';
-// import { Merchant } from './merchant'
+import { Merchant } from './merchant'
 // import { Trie } from './trie'
 
 import sjcl from 'sjcl'
@@ -53,10 +53,14 @@ async function main () {
   //   // const result = await merchant.getAllMerchants();
   //   console.log(result)
 
-  const bit = sjcl.hash.sha256.hash('this is a test')
-  const hash = sjcl.codec.hex.fromBits(bit)
-  console.log('hash: ', hash)
-  console.log('length: ', hash.length)
+  // const bit = sjcl.hash.sha256.hash('this is a test')
+  // const hash = sjcl.codec.hex.fromBits(bit)
+  // console.log('hash: ', hash)
+  // console.log('length: ', hash.length)
+
+  const merchant = new Merchant()
+  merchant.cacheMerchantTypeMap()
+  console.log('reverse: ', merchant.reverseObject(merchant.merchantTypeMap))
 
   // const expenses = new Expenses()
   // expenses.insert({

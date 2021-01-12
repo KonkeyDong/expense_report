@@ -1,8 +1,16 @@
 import { Base } from './base'
+import { MerchantType } from './merchant_type'
 
 export class Merchant extends Base {
     table = 'dummy_merchant';
     idColumnName = 'merchant_id' // PK
+    merchantTypeMap = undefined; // { id: name }
+    merchantTypeMapReverse = undefined; // { name: id }
+
+    // constructor(pool) {
+    //   super(pool)
+    //   this.m
+    // }
 
     async insert (name, merchantTypeId) {
       return (await this.executor({
@@ -28,5 +36,18 @@ export class Merchant extends Base {
 
     async selectAll () {
       return this.selectAllRecords(this.table)
+    }
+
+    async cacheMerchantTypeMap () {
+      this.merchantTypeMap = new MerchantType().selectAll()
+      this.merchantTypeMapReverse = this.reverseObject(this.merchantTypeMap)
+    }
+
+    reverseObject (object) {
+      return Object.keys(object).reduce((cache, key) => {
+        const name = object[key]
+        cache[name] = key
+        return cache
+      }, {})
     }
 }
