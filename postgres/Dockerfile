@@ -21,6 +21,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq --no-install-recommends install s
 WORKDIR /app
 COPY --chown=postgres . /app
 EXPOSE 5432
+RUN touch /var/lib/postgresql/data && \
+    chown -R postgres:postgres /var/lib/postgresql/data && \
+    pg_createcluster -d /var/lib/postgresql/data 13 main
 USER postgres
 
 ENTRYPOINT [ "bash", "start.bash" ]
+
