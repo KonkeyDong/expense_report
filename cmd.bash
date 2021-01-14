@@ -2,7 +2,7 @@
 
 DOCKER_USERNAME="konkeydong"
 CWD=$(dirname "$(readlink -f "$0")")
-declare -A image_hash_list=([node]=1 [postgres]=1)
+declare -A image_hash_list=([node]=1 [mysql]=1)
 
 _check_argument()
 {
@@ -80,9 +80,9 @@ pull() { _push_pull "pull" "$1" "$2"; }
 help()
 {
     cat << EOF
-    build { node postgres }:        Build the specified container.
+    build { node | mysql }:           Build the specified container.
     build_all:                      Build all containers.
-    exec { node postgres } [root]:  Exec into specified container. Uses root user if root is passed.
+    exec { node | mysql } [root]:     Exec into specified container. Uses root user if root is passed.
     help:                           Display this help doc and exit.
     install:                        Install Docker and Docker-Compose.
     prune:                          Remove all dangling docker images.

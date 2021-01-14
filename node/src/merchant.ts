@@ -2,7 +2,7 @@ import { Base } from './base'
 import { MerchantType } from './merchant_type'
 
 export class Merchant extends Base {
-    table = 'dummy_merchant';
+    table = 'merchant';
     idColumnName = 'merchant_id' // PK
     merchantTypeMap = undefined; // { id: name }
     merchantTypeMapReverse = undefined; // { name: id }
@@ -35,12 +35,12 @@ export class Merchant extends Base {
     }
 
     async selectAll () {
-      return this.selectAllRecords(this.table)
+      return await this.selectAllRecords(this.table)
     }
 
     async cacheMerchantTypeMap () {
-      this.merchantTypeMap = new MerchantType().selectAll()
-      this.merchantTypeMapReverse = this.reverseObject(this.merchantTypeMap)
+      this.merchantTypeMap = await new MerchantType().selectAll()
+      // this.merchantTypeMapReverse = this.reverseObject(this.merchantTypeMap)
     }
 
     reverseObject (object) {

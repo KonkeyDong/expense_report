@@ -14,22 +14,24 @@ services:
     volumes:
       - ./node/:/usr/src/app
 
-  postgres:
-    container_name: postgres
-    image: konkeydong/postgres:latest
+  mysql:
+    container_name: mysql
+    image: konkeydong/mysql:latest
     stdin_open: true
     tty: true
     ports: 
-      -  5432:5432
+      -  3306:3306
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    build: ./postgres
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=expense_report
+    build: ./mysql
     networks:
       - the_net
     volumes:
-      - ./postgres/db/:/app/db/
-      - $HOME/docker/volumes/postgres/:/var/lib/postgresql/data
+      - ./mysql/db/:/app/db/
+      - $HOME/docker/volumes/mysql:/var/lib/mysql
 
 networks:
   the_net:

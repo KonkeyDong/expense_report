@@ -1,4 +1,4 @@
-# docker-sqlite3
+# Expense Report
 
 [![Docker pull](https://img.shields.io/docker/pulls/nouchka/sqlite3)](https://hub.docker.com/r/nouchka/sqlite3/)
 [![Docker stars](https://img.shields.io/docker/stars/nouchka/sqlite3)](https://hub.docker.com/r/nouchka/sqlite3/)
@@ -18,7 +18,7 @@
 
 ```bash
 bash quick_startup.sh
-make exec # if you need to jump into the container
+./cmd.bash exec { node | mysql } # quickly jump into a container
 ```
 
 ---
@@ -33,8 +33,22 @@ Run `./cmd.bash help` to get a list of command arguments for the `cmd.bash` scri
 
 
 ```bash
-docker-compose run sqlite3
+./cmd.bash start # start docker containers via docker-compose start
 ```
+
+Then, jump inside of mysql and alter:
+
+```bash
+./cmd.bash exec mysql # exec into `mysql` container
+mysql -u root -p # start a mysql command prompt session
+```
+
+After starting a mysql session, type:
+
+```sql
+ALTER USER 'mysql' IDENTIFIED WITH mysql_native_password BY 'password'
+```
+
 
 ---
 
