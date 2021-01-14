@@ -22,7 +22,7 @@ export class Base {
       } else {
         this.pool = new Pool({
           user: 'postgres',
-          host: '172.17.0.1',
+          host: '172.19.0.2',
           database: 'postgres',
           password: 'password',
           port: 5432
@@ -61,6 +61,7 @@ export class Base {
     }
 
     protected async selectAllRecords (table) {
+      console.log('inside selectAllRecords()')
       return this.pool.query({
         text: `SELECT * FROM ${table}`
       })
