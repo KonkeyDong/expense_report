@@ -63,8 +63,19 @@ exec()
     fi
 }
 
-prune() { docker system prune -a; }
-start() { docker-compose up; }
+start() { 
+    local background_flag=$1
+
+    if [[ $background_flag == "background" ]]
+    then
+        echo "Running docker containers in detached (background) mode"
+        background_flag="--detach"
+    else
+        background_flag=""
+    fi
+    
+    docker-compose up ${background_flag}
+}
 
 _push_pull()
 {
@@ -74,21 +85,26 @@ _push_pull()
     docker ${cmd} ${DOCKER_USERNAME}/${docker_image}
 }
 
+initialize_db() { docker exec mysql /bin/bash /app/db/initialize_database.bash; }
+prune() { docker system prune -a; }
+stop() { docker-compose down; }
 push() { docker login && _push_pull "push" "$1" "$2"; }
 pull() { _push_pull "pull" "$1" "$2"; }
 
 help()
 {
     cat << EOF
-    build { node | mysql }:           Build the specified container.
+    build { node | mysql }:         Build the specified container.
     build_all:                      Build all containers.
-    exec { node | mysql } [root]:     Exec into specified container. Uses root user if root is passed.
+    exec { node | mysql } [root]:   Exec into specified container. Uses root user if root is passed.
     help:                           Display this help doc and exit.
+    initialize_db:                  Create the mysql user [mysql] and create the DB tables (if not already existing).
     install:                        Install Docker and Docker-Compose.
     prune:                          Remove all dangling docker images.
     pull:                           Pull container from docker hub.
     push:                           Push container to docker hub.
-    start:                          Start all docker containers.
+    start { background }:           Start all docker containers. Run in background of terminal if "background" is sent as argument.
+    stop:                           Stop all docker containers.
 EOF
 
     exit 0
