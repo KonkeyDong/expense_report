@@ -31,7 +31,10 @@ services:
       - the_net
     volumes:
       - ./mysql/db/:/app/db/
-      - $HOME/docker/volumes/mysql:/var/lib/mysql
+      - data:/var/lib/mysql
 
 networks:
   the_net:
+
+volumes:
+  data:
