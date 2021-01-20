@@ -1,5 +1,5 @@
-import { Base } from './base'
-import { MerchantType } from './merchant_type'
+import {Base} from './base';
+import {MerchantType} from './merchant_type';
 
 export class Merchant extends Base {
     table = 'merchant';
@@ -7,47 +7,46 @@ export class Merchant extends Base {
     merchantTypeMap = undefined; // { id: name }
     merchantTypeMapReverse = undefined; // { name: id }
 
-    // constructor(pool) {
-    //   super(pool)
-    //   this.m
-    // }
-
-    async insert (name, merchantTypeId) {
+    async insert(name, merchantTypeId) {
       return (await this.executor({
-        text: `INSERT INTO ${this.table}(name, merchant_type_id) VALUES($1, $2) RETURNING ${this.idColumnName}`,
-        values: [name, merchantTypeId]
-      })).merchant_id
+        sql: `INSERT INTO ${this.table} SET name = ?, merchant_type_id = ?`,
+        values: [name, merchantTypeId],
+      })).merchant_id;
     }
 
-    async update (name, merchantId) {
-      return await this.executor({
-        text: `UPDATE ${this.table} SET name = $1 WHERE ${this.idColumnName} = $2`,
-        values: [name, merchantId]
-      })
+    async update(name, merchantId) {
+      return await this.transaction({
+        sql: `UPDATE ${this.table} SET name = ? WHERE ${this.idColumnName} = ?`,
+        values: [name, merchantId],
+      });
     }
 
-    async delete (merchantId) {
-      return await this.executor(this.buildConfig('DELETE', this.table, this.idColumnName, merchantId))
+    async delete(merchantId) {
+      return await this.executor(
+          this.buildConfig(
+              'DELETE',
+              merchantId,
+          ));
     }
 
-    async select (merchantId: number) {
-      return await this.selector(this.buildConfig('SELECT', this.table, this.idColumnName, merchantId))
+    async select(merchantId: number) {
+      return await this.selector(
+          this.buildConfig(
+              'SELECT',
+              merchantId,
+          ))[0];
     }
 
-    async selectAll () {
-      return await this.selectAllRecords(this.table)
-    }
-
-    async cacheMerchantTypeMap () {
-      this.merchantTypeMap = await new MerchantType().selectAll()
+    async cacheMerchantTypeMap() {
+      this.merchantTypeMap = await new MerchantType().selectAll();
       // this.merchantTypeMapReverse = this.reverseObject(this.merchantTypeMap)
     }
 
-    reverseObject (object) {
+    reverseObject(object) {
       return Object.keys(object).reduce((cache, key) => {
-        const name = object[key]
-        cache[name] = key
-        return cache
-      }, {})
+        const name = object[key];
+        cache[name] = key;
+        return cache;
+      }, {});
     }
 }
