@@ -1,82 +1,82 @@
-import { Pool } from 'pg'
+import mysql from 'mysql2/promise';
 
-// See here for their QueryConfig interface:
-// https://node-postgres.com/api/client
 interface IQueryConfig {
-    text: string; // the raw query text
+    sql: string; // the raw query text
     values?: Array<any>; // an array of query parameters
     name?: string; // name of the query - used for prepared statements
-
-    // by default rows come out as a key/value pair for each row
-    // pass the string 'array' here to receive rows as an array of values
-    rowMode?: string;
-
 }
 
-export class Base {
-    pool = undefined
+export abstract class Base {
+  pool = undefined
+  table = undefined; // defined in child
+  idColumnName = undefined // defined in child
 
-    constructor (pool?) {
-      if (pool) {
-        this.pool = pool
-      } else {
-        this.pool = new Pool({
-          user: 'postgres',
-          host: '172.19.0.2',
-          database: 'postgres',
-          password: 'password',
-          port: 5432
-        })
-      }
+  constructor(pool?) {
+    if (pool) {
+      this.pool = pool;
+    } else {
+      this.pool = mysql.createPool({
+        connectionLimit: 10,
+        user: 'mysql',
+        host: '172.20.0.2',
+        database: 'expense_report',
+        password: 'password',
+        port: 3306,
+      });
+    }
+  }
+
+  protected async executor(config: IQueryConfig) {
+    try {
+      const results = await this.pool.query(config);
+      return results[0]; // success
+    } catch (error) {
+      console.log(error.sqlMessage);
+      return false; // fail
+    }
+  }
+
+  protected async transaction(config: IQueryConfig) {
+    const connection = await this.pool.getConnection();
+    connection.beginTransaction();
+
+    try {
+      await connection.query(config);
+      await connection.commit();
+      return true; // update successful
+    } catch (error) {
+      await connection.rollback();
+      console.log(error.sqlMessage);
+      return false; // update fail
+    } finally {
+      connection.release();
+    }
+  }
+
+  protected async selector(config: IQueryConfig) {
+    const results = await this.pool.query(config);
+    if (results[0].length < 1) {
+      return [undefined]; // fail as array for selectAll() query
     }
 
-    protected async executor (config: IQueryConfig) {
-      // See this on wny to use client for transactions:
-      // https://node-postgres.com/features/transactions
-      const client = await this.pool.connect()
+    // remove the TextRow type that's inherit from the mysql2 library
+    return results[0].map((result) => Object.assign({}, result));
+  }
 
-      try {
-        await client.query('BEGIN')
-        const result = await client.query(config)
-        await client.query('COMMIT')
-        return result.rows[0]
-      } catch (error) {
-        await client.query('ROLLBACK')
-        throw error
-      } finally {
-        client.release()
-      }
-    }
+  public async selectAll() {
+    return await this.selector({
+      sql: `SELECT * FROM ${this.table}`,
+    });
+  }
 
-    protected async selector (config: IQueryConfig) {
-      return this.pool.query(config)
-        .then(result => {
-          if (!result.rows[0]) {
-            console.log('No record was found.')
-          }
+  protected buildConfig(keyword, id) {
+    return {
+      sql: `${keyword} * FROM ${this.table} WHERE ${this.idColumnName} = ?`,
+      values: [id],
+    };
+  }
 
-          return result.rows[0]
-        })
-        .catch(error => console.log(error.stack))
-    }
-
-    protected async selectAllRecords (table) {
-      console.log('inside selectAllRecords()')
-      return this.pool.query({
-        text: `SELECT * FROM ${table}`
-      })
-        .then(result => result.rows)
-        .catch(error => console.log(error.stack))
-    }
-
-    protected buildConfig (keyword, table, idColumnName, id) {
-      return {
-        text: `${keyword} * FROM ${table} WHERE ${idColumnName} = $1`,
-        values: [id]
-      }
-    }
-
-    finish () {
-      this.pool.end()
-    }
+  finish() {
+    this.pool.end();
+  }
 }
