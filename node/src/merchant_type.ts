@@ -1,4 +1,5 @@
 import {Base} from './base';
+// const Base = require('./base');
 
 export class MerchantType extends Base {
     table = 'merchant_type';
@@ -19,11 +20,11 @@ export class MerchantType extends Base {
     }
 
     async delete(merchantTypeId) {
-      return await this.executor(
+      return (await this.transaction(
           this.buildConfig(
               'DELETE',
               merchantTypeId,
-          ));
+          )));
     }
 
     async select(merchantTypeId) {

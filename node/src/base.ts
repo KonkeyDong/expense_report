@@ -18,7 +18,7 @@ export abstract class Base {
       this.pool = mysql.createPool({
         connectionLimit: 10,
         user: 'mysql',
-        host: '172.20.0.2',
+        host: '172.18.0.2',
         database: 'expense_report',
         password: 'password',
         port: 3306,
@@ -31,7 +31,7 @@ export abstract class Base {
       const results = await this.pool.query(config);
       return results[0]; // success
     } catch (error) {
-      console.log(error.sqlMessage);
+      console.warn(error.sqlMessage);
       return false; // fail
     }
   }
@@ -41,12 +41,18 @@ export abstract class Base {
     connection.beginTransaction();
 
     try {
-      await connection.query(config);
+      const results = Object.assign({}, (await connection.query(config))[0]);
       await connection.commit();
+
+      if (results.changedRows === 0) {
+        console.warn('No rows were updated: ', config);
+        return false;
+      }
+
       return true; // update successful
     } catch (error) {
       await connection.rollback();
-      console.log(error.sqlMessage);
+      console.warn(error.sqlMessage);
       return false; // update fail
     } finally {
       connection.release();
@@ -69,11 +75,26 @@ export abstract class Base {
     });
   }
 
+  public async lastInsertId() {
+    return await this.executor({
+      sql: `SELECT last_insert_id()`,
+    });
+  }
+
   protected buildConfig(keyword, id) {
     return {
-      sql: `${keyword} * FROM ${this.table} WHERE ${this.idColumnName} = ?`,
+      sql: `${this.checkKeyword(keyword)} FROM ${this.table} WHERE ${this.idColumnName} = ?`,
       values: [id],
     };
+  }
+
+  private checkKeyword(keyword) {
+    const map = {
+      'SELECT': 'SELECT *',
+      'DELETE': 'DELETE',
+    };
+
+    return map[keyword];
   }
 
   finish() {
