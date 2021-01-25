@@ -10,7 +10,8 @@ services:
       -  8081:8081
     build: ./node
     networks:
-      - the_net
+      frontend:
+        ipv4_address: 172.20.0.81
     volumes:
       - ./node/:/usr/src/app
 
@@ -28,13 +29,17 @@ services:
       - MYSQL_DATABASE=expense_report
     build: ./mysql
     networks:
-      - the_net
+      frontend:
+        ipv4_address: 172.20.0.80
     volumes:
       - ./mysql/db/:/app/db/
       - data:/var/lib/mysql
 
 networks:
-  the_net:
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
 
 volumes:
   data:

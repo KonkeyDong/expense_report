@@ -18,7 +18,7 @@ export abstract class Base {
       this.pool = mysql.createPool({
         connectionLimit: 10,
         user: 'mysql',
-        host: '172.18.0.2',
+        host: '172.20.0.80',
         database: 'expense_report',
         password: 'password',
         port: 3306,
