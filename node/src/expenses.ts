@@ -1,7 +1,7 @@
 import {Base} from './base';
 import sjcl from 'sjcl';
 
-interface IExpenses {
+export interface IExpenses {
   purchaseDate: string, // YYYY-MM-DD
   merchantId: number,
   cost: number,
@@ -27,27 +27,27 @@ export class Expenses extends Base {
       })).insertId;
     }
 
-    async update(name, expensesId) {
-      return (await this.transaction({
-        sql: `UPDATE ${this.table} SET name = ? WHERE ${this.idColumnName} = ?`,
-        values: [name, expensesId],
-      }));
-    }
+    // async update(id, name) {
+    //   return (await this.transaction({
+    //     sql: `UPDATE ${this.table} SET name = ? WHERE ${this.idColumnName} = ?`,
+    //     values: [name, id],
+    //   }));
+    // }
 
-    async delete(expensesId) {
-      return await this.executor(
+    async delete(id) {
+      return await this.transaction(
           this.buildConfig(
               'DELETE',
-              expensesId,
+              id,
           ));
     }
 
-    async select(expensesId) {
-      return await this.selector(
+    async select(id) {
+      return (await this.selector(
           this.buildConfig(
               'SELECT',
-              expensesId,
-          ))[0];
+              id),
+      ))[0];
     }
 
     private async sha256Sum(date, merchantId, cost) {

@@ -2,8 +2,8 @@ import {Base} from './base';
 // const Base = require('./base');
 
 export class MerchantType extends Base {
-    table = 'merchant_type';
-    idColumnName = 'merchant_type_id' // PK
+    protected table = 'merchant_type';
+    protected idColumnName = 'merchant_type_id' // PK
 
     async insert(name) {
       return (await this.executor({

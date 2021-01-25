@@ -7,9 +7,9 @@ interface IQueryConfig {
 }
 
 export abstract class Base {
-  pool = undefined
-  table = undefined; // defined in child
-  idColumnName = undefined // defined in child
+  protected pool = undefined
+  protected table = undefined; // defined in child
+  protected idColumnName = undefined // defined in child
 
   constructor(pool?) {
     if (pool) {
