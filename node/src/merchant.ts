@@ -2,43 +2,43 @@ import {Base} from './base';
 import {MerchantType} from './merchant_type';
 
 export class Merchant extends Base {
-    table = 'merchant';
-    idColumnName = 'merchant_id' // PK
-    merchantTypeMap = undefined; // { id: name }
-    merchantTypeMapReverse = undefined; // { name: id }
+    protected table = 'merchant';
+    protected idColumnName = 'merchant_id' // PK
+    protected merchantTypeMap = undefined; // { id: name }
+    protected merchantTypeMapReverse = undefined; // { name: id }
 
-    async insert(name, merchantTypeId) {
+    async insert(id, name) {
       return (await this.executor({
         sql: `INSERT INTO ${this.table} SET name = ?, merchant_type_id = ?`,
-        values: [name, merchantTypeId],
-      })).merchant_id;
+        values: [name, id],
+      })).insertId;
     }
 
-    async update(name, merchantId) {
-      return await this.transaction({
+    async update(id, name) {
+      return (await this.transaction({
         sql: `UPDATE ${this.table} SET name = ? WHERE ${this.idColumnName} = ?`,
-        values: [name, merchantId],
-      });
+        values: [name, id],
+      }));
     }
 
-    async delete(merchantId) {
-      return await this.executor(
+    async delete(id) {
+      return await this.transaction(
           this.buildConfig(
               'DELETE',
-              merchantId,
+              id,
           ));
     }
 
-    async select(merchantId: number) {
-      return await this.selector(
+    async select(id) {
+      return (await this.selector(
           this.buildConfig(
               'SELECT',
-              merchantId,
-          ))[0];
+              id),
+      ))[0];
     }
 
     async cacheMerchantTypeMap() {
-      this.merchantTypeMap = await new MerchantType().selectAll();
+      this.merchantTypeMap = await new MerchantType(this.pool).selectAll();
       // this.merchantTypeMapReverse = this.reverseObject(this.merchantTypeMap)
     }
 

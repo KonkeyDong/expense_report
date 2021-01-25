@@ -6,6 +6,8 @@ describe('MerchantType', () => {
   let merchantType = undefined;
 
   beforeAll(async (done) => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {}); // disable console.warn
+
     merchantType = new MerchantType();
     const tableDefinition = await merchantType.pool.query('describe merchant_type');
     const query = createDummyTable(table, tableDefinition[0]);
@@ -24,11 +26,6 @@ describe('MerchantType', () => {
   beforeEach(async (done) => {
     merchantType = new MerchantType();
     merchantType.table = table;
-    done();
-  }, 10000);
-
-  afterEach(async (done) => {
-    merchantType.pool.end();
     done();
   }, 10000);
 
@@ -92,10 +89,11 @@ describe('MerchantType', () => {
   });
 
   describe('.delete()', () => {
-    test('remove a record', async () => {
+    test('remove a record', async (done) => {
       expect(await merchantType.select(1)).toStrictEqual({merchant_type_id: 1, name: 'banana'});
       expect(await merchantType.delete(1)).toBe(true);
       expect(await merchantType.select(1)).toBe(undefined);
-    });
+      done();
+    }, 30000);
   });
 });
