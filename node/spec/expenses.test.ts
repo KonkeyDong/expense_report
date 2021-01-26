@@ -54,17 +54,17 @@ describe('Expenses', () => {
   });
 
   describe('.select()', () => {
-    // test('finds a record', async (done) => {
-    //   expect((await expenses.select(1))).toStrictEqual({
-    //     expenses_id: 1,
-    //     cost: '123.45',
-    //     note: null,
-    //     hash_code: '106b9124616a06478953c58306e72044cb84096e83ed369377727a11d8184df5',
-    //     merchant_id: 1,
-    //     purchase_date: '2021-01-01T00:00:00.000Z',
-    //   });
-    //   done();
-    // }, 30000);
+    test('finds a record', async (done) => {
+      expect((await expenses.select(1))).toStrictEqual({
+        expenses_id: 1,
+        cost: '123.45',
+        note: null,
+        hash_code: '106b9124616a06478953c58306e72044cb84096e83ed369377727a11d8184df5',
+        merchant_id: 1,
+        purchase_date: '2021-01-01',
+      });
+      done();
+    }, 30000);
 
     test('no record found', async (done) => {
       expect((await expenses.select(9999999))).toBe(undefined);
@@ -73,43 +73,68 @@ describe('Expenses', () => {
     }, 30000);
   });
 
-  //   describe('.selectAll()', () => {
-  //     test('Return all table entries', async (done) => {
-  //       expect((await expenses.selectAll())).toStrictEqual([
-  //         {
-  //           expenses_id: 1,
-  //           expenses_type_id: 1,
-  //           name: 'bologna',
-  //         },
-  //         {
-  //           expenses_id: 3,
-  //           expenses_type_id: 2,
-  //           name: 'phony',
-  //         },
-  //       ]);
-  //       done();
-  //     }, 30000);
-  //   });
+  describe('.selectAll()', () => {
+    test('Return all table entries', async (done) => {
+      expect((await expenses.selectAll())).toStrictEqual([{
+        expenses_id: 1,
+        cost: '123.45',
+        note: null,
+        hash_code: '106b9124616a06478953c58306e72044cb84096e83ed369377727a11d8184df5',
+        merchant_id: 1,
+        purchase_date: '2021-01-01',
+      },
+      {
+        expenses_id: 3,
+        cost: '543.21',
+        note: null,
+        hash_code: '97f6d1e9b668775ebf68587611d6ff5360215f377b869fba206ea0d83228050b',
+        merchant_id: 1,
+        purchase_date: '2021-01-01',
+      }]);
+      done();
+    }, 30000);
+  });
 
-  //   describe('.update()', () => {
-  //     test('update "bologna" to "banana"', async (done) => {
-  //       expect(await expenses.update('banana', 1)).toBe(true);
-  //       expect(await expenses.select(1)).toStrictEqual({expenses_type_id: 1, name: 'banana', expenses_id: 1});
-  //       done();
-  //     }, 30000);
+  describe('.update()', () => {
+    const updatedDummyData = {
+      cost: '67.89',
+      note: null,
+      merchantId: 33,
+      purchaseDate: '2014-05-19',
+    };
 
-  //     test('does not update if invalid ID', async (done) => {
-  //       expect(await expenses.update('bogus', 9999999999)).toBe(false);
-  //       done();
-  //     }, 30000);
-  //   });
+    test('update cost, merchant_id, purchase_date. Method should handle updating the hash_code', async (done) => {
+      expect(await expenses.update(3, updatedDummyData)).toBe(true);
+      expect(await expenses.select(3)).toStrictEqual({
+        expenses_id: 3,
+        cost: '67.89',
+        note: null,
+        hash_code: 'ea1262aa6bd8d3c5646a4d55ab4b838b4302408255d5d67e322e3a0843d6db98',
+        merchant_id: 33,
+        purchase_date: '2014-05-19',
+      });
+      done();
+    }, 30000);
 
-//   describe('.delete()', () => {
-//     test('remove a record', async (done) => {
-//       expect(await expenses.select(1)).toStrictEqual({expenses_type_id: 1, name: 'banana', expenses_id: 1});
-//       expect(await expenses.delete(1)).toBe(true);
-//       expect(await expenses.select(1)).toBe(undefined);
-//       done();
-//     }, 30000);
-//   });
+    test('does not update if invalid ID', async (done) => {
+      expect(await expenses.update(9999999999, updatedDummyData)).toBe(false);
+      done();
+    }, 30000);
+  });
+
+  describe('.delete()', () => {
+    test('remove a record', async (done) => {
+      expect(await expenses.select(1)).toStrictEqual({
+        expenses_id: 1,
+        cost: '123.45',
+        note: null,
+        hash_code: '106b9124616a06478953c58306e72044cb84096e83ed369377727a11d8184df5',
+        merchant_id: 1,
+        purchase_date: '2021-01-01',
+      });
+      expect(await expenses.delete(1)).toBe(true);
+      expect(await expenses.select(1)).toBe(undefined);
+      done();
+    }, 30000);
+  });
 });

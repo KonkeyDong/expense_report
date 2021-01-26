@@ -22,6 +22,7 @@ export abstract class Base {
         database: 'expense_report',
         password: 'password',
         port: 3306,
+        dateStrings: true, // without this, your date won't be a string!
       });
     }
   }
@@ -45,7 +46,7 @@ export abstract class Base {
       await connection.commit();
 
       if (results.changedRows === 0) {
-        console.warn('No rows were updated: ', config);
+        console.warn('No rows were updated/deleted: ', config);
         return false;
       }
 

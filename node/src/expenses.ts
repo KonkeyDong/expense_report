@@ -27,12 +27,20 @@ export class Expenses extends Base {
       })).insertId;
     }
 
-    // async update(id, name) {
-    //   return (await this.transaction({
-    //     sql: `UPDATE ${this.table} SET name = ? WHERE ${this.idColumnName} = ?`,
-    //     values: [name, id],
-    //   }));
-    // }
+    async update(id, {purchaseDate, merchantId, cost, note}: IExpenses) {
+      const hashCode = this.sha256Sum(purchaseDate, merchantId, cost);
+
+      return (await this.transaction({
+        sql: `UPDATE ${this.table}
+        SET purchase_date = ?,
+            merchant_id = ?,
+            cost = ?,
+            note = ?,
+            hash_code = ?
+        WHERE ${this.idColumnName} = ?`,
+        values: [purchaseDate, merchantId, cost, note, hashCode, id],
+      }));
+    }
 
     async delete(id) {
       return await this.transaction(
@@ -50,7 +58,7 @@ export class Expenses extends Base {
       ))[0];
     }
 
-    private async sha256Sum(date, merchantId, cost) {
+    private sha256Sum(date, merchantId, cost) {
       const data = [date, merchantId, cost].join('|');
       const bit = sjcl.hash.sha256.hash(data);
       return sjcl.codec.hex.fromBits(bit);
