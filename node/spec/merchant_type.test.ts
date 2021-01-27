@@ -1,4 +1,4 @@
-import {MerchantType} from '../src/merchant_type';
+import {MerchantType} from '../src/classes/merchant_type';
 import createDummyTable from './create_dummy_table';
 
 describe('MerchantType', () => {

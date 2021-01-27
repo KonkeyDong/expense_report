@@ -1,7 +1,6 @@
-import {Base} from './base';
-// const Base = require('./base');
+import {CommonMerchant} from './common_merchant';
 
-export class MerchantType extends Base {
+export class MerchantType extends CommonMerchant {
     protected table = 'merchant_type';
     protected idColumnName = 'merchant_type_id' // PK
 
