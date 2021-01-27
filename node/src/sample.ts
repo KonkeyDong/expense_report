@@ -1,23 +1,23 @@
 
-import {MerchantType} from './merchant_type';
-import {Expenses} from './expenses';
-import {Merchant} from './merchant';
+import {MerchantType} from './classes/merchant_type';
+// import {Expenses} from './expenses';
+import {Merchant} from './classes/merchant';
+// import {input} from './input';
 
-// const { Pool } = pkg;
 async function main() {
-  const expenses = new Expenses();
-  const data = await expenses.select(1);
-  // console.log('type: ', typeof purchase_date, '  |  data: ', purchase_date);
-  console.log('data: ', data);
-  // const merchantType = new MerchantType();
-  // const x = await merchantType.select(1);
-  // const x = await merchantType.selectAll();
+  const merchant = new Merchant();
+  await merchant.selectAll();
+  const merchantType = new MerchantType();
+  await merchantType.selectAll();
 
-  // const x = await merchantType.selectAll();
-  // const x = await merchantType.update(12, 'clam');
-  // console.log('result: ', x);
 
-  // merchantType.finish();
+  // const x = await input({
+  //   date: '2020-12-21',
+  //   name: 'taco johns',
+  //   cost: '8.77',
+  // }, merchant, merchantType);
+
+  // console.log('x: ', x);
 }
 
 main();

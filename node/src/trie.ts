@@ -1,15 +1,16 @@
-import {IMerchantAndType} from './merchant_and_merchant_type_interface';
+import {IMerchant} from './interfaces/merchant';
+import {IMerchantType} from './interfaces/merchant_type';
 
 export class Trie {
     root = {};
     partialFind = '';
 
-    constructor(data?: Array<IMerchantAndType>) {
+    constructor(data?: Array<IMerchant | IMerchantType>) {
       this.root = {};
       data.forEach((string) => this.add(string));
     }
 
-    add(data: IMerchantAndType) {
+    add(data: IMerchant | IMerchantType) {
       let pointer = this.root;
       for (const character of data.name) {
         if (!pointer[character]) {
@@ -21,6 +22,8 @@ export class Trie {
       pointer[this.lastCharacter(data.name)] = data;
     }
 
+    // if nothing is found, returns undefined.
+    // use getPartialMatchings() to find potential matches.
     find(string: string) {
       this.partialFind = '';
       let pointer = this.root;

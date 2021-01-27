@@ -1,4 +1,4 @@
-import {Expenses, IExpenses} from '../src/expenses';
+import {Expenses, IExpenses} from '../src/classes/expenses';
 import createDummyTable from './create_dummy_table';
 
 describe('Expenses', () => {

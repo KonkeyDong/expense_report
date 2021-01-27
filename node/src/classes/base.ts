@@ -98,7 +98,7 @@ export abstract class Base {
     return map[keyword];
   }
 
-  finish() {
-    this.pool.end();
+  public Pool() {
+    return this.pool;
   }
 }
