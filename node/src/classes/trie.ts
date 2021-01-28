@@ -1,5 +1,5 @@
-import {IMerchant} from './interfaces/merchant';
-import {IMerchantType} from './interfaces/merchant_type';
+import {IMerchant} from '../interfaces/merchant';
+import {IMerchantType} from '../interfaces/merchant_type';
 
 export class Trie {
     root = {};

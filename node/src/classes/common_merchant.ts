@@ -1,5 +1,5 @@
 import {Base} from './base';
-import {Trie} from '../trie';
+import {Trie} from './trie';
 import {IMerchant} from '../interfaces/merchant';
 import {IMerchantType} from '../interfaces/merchant_type';
 
@@ -23,5 +23,18 @@ export abstract class CommonMerchant extends Base {
 
         return cache;
       }, {});
+    }
+
+    protected addToNameCache(data: IMerchant | IMerchantType) {
+      const {name} = data;
+      this.nameMap[name] = data;
+    }
+
+    public getTrie() {
+      return this.trie;
+    }
+
+    public lookupName(name) {
+      return this.nameMap[name];
     }
 }
