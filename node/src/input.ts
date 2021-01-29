@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import prompt from 'prompt';
 import {Merchant} from './classes/merchant';
 import {MerchantType} from './classes/merchant_type';
@@ -10,26 +11,20 @@ interface IinputData {
     cost: string;
 }
 
-const properties = {
-  properties: {
-    choice: {
-      description: '[Y]es, [R]ename, [S]elect, [A]dd, [L]ist',
-      type: 'string',
-      pattern: /^[YRSAL]$/i,
-      required: true,
-    },
-  },
-};
-
 // const dispatch
 
 export async function input(data: IinputData, merchant: Merchant, merchantType: MerchantType) {
   const foundData = await lookupName(data, merchant);
+
   if (foundData) return foundData;
 
-  console.log('raw data: ', data);
+  console.log('line data: ', data);
   prompt.start();
-  const {choice} = await prompt.get(properties);
+  const {choice} = await prompt.get(
+      stringPrompt(
+          '[Y]es, [R]ename, [S]earch, [A]dd, [L]ist',
+          /^[YRSAL]$/i,
+      ));
 
   if (choice.toUpperCase() === 'Y') return data;
 
@@ -50,12 +45,13 @@ async function lookupName(data, merchant) {
   const foundData = merchant.lookupName(data.name);
   if (foundData) {
     const {date: purchaseDate, cost} = data;
-    const {merchant_id: merchantId} = foundData;
+    const {merchant_id, merchantId} = foundData;
+
 
     return {
       purchaseDate,
       cost,
-      merchantId,
+      merchantId: merchant_id || merchantId,
     };
   }
 
@@ -78,15 +74,9 @@ async function selectPartialListing(partialListing) {
     console.log(`${i}`.padStart(5, ' '), ' | ', partialListing[i]);
   }
 
-  const {choice} = await prompt.get({
-    properties: {
-      choice: {
-        description: 'Select a number to select that data',
-        type: 'number',
-        required: true,
-      },
-    },
-  });
+  const {choice} = await prompt.get(
+      numberPrompt('Select a number to select that data'),
+  );
 
   if (choice === 0) return undefined;
 
@@ -103,14 +93,9 @@ async function select(data, merchant, merchantType) {
 }
 
 async function rename(data, merchant, merchantType) {
-  const {choice} = await prompt.get({
-    properties: {
-      choice: {
-        description: 'Enter a new name',
-        type: 'string',
-        required: true,
-      },
-    }});
+  const {choice} = await prompt.get(
+      stringPrompt('Enter a new name'),
+  );
 
   data = {...data, name: choice};
   return await input(data, merchant, merchantType);
@@ -120,8 +105,34 @@ async function add(data, merchant, merchantType) {
   const {merchant_type_id: merchantTypeId} = await merchantType.choose(prompt);
   const merchantId = await merchant.insert(merchantTypeId, data.name);
 
-  // console.log('input::add() data: ', data);
-  // console.log('input::add() merchantId: ', merchantId);
+  merchant.addToNameCache({
+    merchantId,
+    merchantTypeId,
+    name: data.name,
+  });
 
   return await input(data, merchant, merchantType);
+}
+
+function stringPrompt(description, pattern?) {
+  const result = buildPromptProperties(description, 'string');
+  if (pattern) result.properties.choice['pattern'] = pattern;
+
+  return result;
+}
+
+function numberPrompt(description) {
+  return buildPromptProperties(description, 'number');
+}
+
+function buildPromptProperties(description, type) {
+  return {
+    properties: {
+      choice: {
+        description,
+        type,
+        required: true,
+      },
+    },
+  };
 }
