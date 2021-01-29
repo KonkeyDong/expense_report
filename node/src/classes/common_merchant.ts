@@ -9,6 +9,12 @@ export abstract class CommonMerchant extends Base {
     protected nameMap = undefined;
     protected trie = undefined;
 
+    constructor(pool?) {
+      super(pool);
+      this.trie = new Trie();
+      this.nameMap = {};
+    }
+
     async selectAll() {
       const data = await super.selectAll();
       this.trie = new Trie(data);

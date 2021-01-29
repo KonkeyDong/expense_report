@@ -1,6 +1,6 @@
 
 import {MerchantType} from './classes/merchant_type';
-// import {Expenses} from './expenses';
+import {Expenses} from './classes/expenses';
 import {Merchant} from './classes/merchant';
 import {input} from './input';
 
@@ -12,17 +12,26 @@ async function main() {
   await merchant.selectAll();
   const merchantType = new MerchantType();
   await merchantType.selectAll();
+  const expenses = new Expenses();
 
   const lines = await readFile('expenses_update_data.txt');
 
   // See why I gathered data like this:
   // https://stackoverflow.com/a/37576787
-  const result = [];
+
+  // const result = [];
+  // result.push(await input({
+  //   date: '2020-12-8',
+  //   cost: '1.00',
+  //   name: 'parking meter',
+  // }, merchant, merchantType));
   for (const line of lines) {
-    result.push(await parse(line, merchant, merchantType));
+    const insertData = await parse(line, merchant, merchantType);
+    expenses.insert(insertData);
   }
 
-  console.log('result: ', result);
+  console.log('FINISHED');
+  return 0;
 }
 
 async function parse(line, merchant, merchantType) {

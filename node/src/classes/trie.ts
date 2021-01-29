@@ -5,9 +5,9 @@ export class Trie {
     root = {};
     partialFind = '';
 
-    constructor(data?: Array<IMerchant | IMerchantType>) {
+    constructor(data?: [IMerchant | IMerchantType]) {
       this.root = {};
-      data.forEach((string) => this.add(string));
+      data && data.forEach((string) => this.add(string));
     }
 
     add(data: IMerchant | IMerchantType) {
@@ -40,9 +40,13 @@ export class Trie {
       return pointer[this.lastCharacter(string)];
     }
 
-    getPartialMatchings() {
+    // May need a refactor as you need to call find() first
+    // to set the this.partialFind property, which is used
+    // in this method call for fidning partial matches.
+    getPartialMatchings(prefix?: string) {
       let pointer = this.root;
-      for (const character of this.partialFind) {
+      const searchString = prefix ? prefix : this.partialFind;
+      for (const character of searchString) {
         pointer = pointer[character];
       }
 
@@ -53,9 +57,12 @@ export class Trie {
 
     private recurseOverListings(pointer, list) {
       for (const character of Object.keys(pointer)) {
+        // if the character is a single character string, we found a key.
+        // recursively call the function again but using the next character.
         if (typeof character === 'string' && character.length === 1) {
           this.recurseOverListings(pointer[character], list);
         } else {
+          // we found data. push to an array and search again.
           list.push(pointer);
           return;
         }
