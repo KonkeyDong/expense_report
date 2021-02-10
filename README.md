@@ -14,6 +14,12 @@
 
 ---
 
+# Note
+
+This project will go on a small hiatus while I learn more `SPA` technology, such as `React`.
+
+---
+
 # Quick Start
 
 ```bash
