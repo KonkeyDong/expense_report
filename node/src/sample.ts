@@ -35,9 +35,9 @@ async function main() {
 }
 
 async function parse(line, merchant, merchantType) {
-  const [date, name, cost] = line.split('|');
+  const [purchaseDate, name, cost] = line.split('|');
   return await input({
-    date,
+    purchaseDate,
     cost,
     name,
   }, merchant, merchantType);

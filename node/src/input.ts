@@ -1,3 +1,6 @@
+// This module file is mainly to test input before I build the frontend!
+// It will be removed later. I was just testing if things were behaving correctly.
+
 /* eslint-disable camelcase */
 import prompt from 'prompt';
 import {Merchant} from './classes/merchant';
@@ -6,12 +9,20 @@ import {MerchantType} from './classes/merchant_type';
 prompt.colors = false;
 
 interface IinputData {
-    date: string;
+    purchaseDate: string;
     name: string;
     cost: string;
 }
 
-// const dispatch
+const dispatch = {
+  Y: (data, ...rest) => {
+    return data
+    ;
+  },
+  R: rename,
+  S: select,
+  A: add,
+};
 
 export async function input(data: IinputData, merchant: Merchant, merchantType: MerchantType) {
   const foundData = await lookupName(data, merchant);
@@ -26,25 +37,16 @@ export async function input(data: IinputData, merchant: Merchant, merchantType: 
           /^[YRSAL]$/i,
       ));
 
-  if (choice.toUpperCase() === 'Y') return data;
-
-  if (choice.toUpperCase() === 'R') {
-    return await rename(data, merchant, merchantType);
-  }
-
-  if (choice.toUpperCase() === 'S') {
-    return await select(data, merchant, merchantType);
-  }
-
-  if (choice.toUpperCase() === 'A') {
-    return await add(data, merchant, merchantType);
-  }
+  const func = dispatch[choice.toUpperCase()];
+  return func ?
+    await func(data, merchant, merchantType) :
+    await input(data, merchant, merchantType);
 }
 
-async function lookupName(data, merchant) {
+export async function lookupName(data, merchant) {
   const foundData = merchant.lookupName(data.name);
   if (foundData) {
-    const {date: purchaseDate, cost} = data;
+    const {purchaseDate, cost} = data;
     const {merchant_id, merchantId} = foundData;
 
 
@@ -58,7 +60,7 @@ async function lookupName(data, merchant) {
   return undefined;
 }
 
-async function getPartialListing(data, merchant) {
+export async function getPartialListing(data, merchant) {
   merchant.getTrie().find(data.name);
 
   const partialListing = merchant
@@ -69,7 +71,7 @@ async function getPartialListing(data, merchant) {
   return partialListing;
 }
 
-async function selectPartialListing(partialListing) {
+export async function selectPartialListing(partialListing) {
   for (let i = 0; i < partialListing.length; i++) {
     console.log(`${i}`.padStart(5, ' '), ' | ', partialListing[i]);
   }
@@ -83,7 +85,7 @@ async function selectPartialListing(partialListing) {
   return partialListing[choice];
 }
 
-async function select(data, merchant, merchantType) {
+export async function select(data, merchant, merchantType) {
   const partialListing = await getPartialListing(data, merchant);
   const selectedData = await selectPartialListing(partialListing);
 
@@ -92,7 +94,7 @@ async function select(data, merchant, merchantType) {
   return await input({...data, name: selectedData.name}, merchant, merchantType);
 }
 
-async function rename(data, merchant, merchantType) {
+export async function rename(data, merchant, merchantType) {
   const {choice} = await prompt.get(
       stringPrompt('Enter a new name'),
   );
@@ -101,7 +103,7 @@ async function rename(data, merchant, merchantType) {
   return await input(data, merchant, merchantType);
 }
 
-async function add(data, merchant, merchantType) {
+export async function add(data, merchant, merchantType) {
   const {merchant_type_id: merchantTypeId} = await merchantType.choose(prompt);
   const merchantId = await merchant.insert(merchantTypeId, data.name);
 
